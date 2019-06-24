@@ -79,10 +79,38 @@ class Game extends Component {
   setMoveOption = (row,cell) => {
     let { board, current_letter } = this.state;
     console.log("Moved: "+row+","+cell+","+current_letter);
-    let new_letter = current_letter == 'X' ? 'O' : 'X';
-    this.setState({current_letter: new_letter}, function(){
-      console.log(current_letter);
+    this.saveMove(row,cell);
+    // if (this.isSquareEmpty(row,cell)){
+    //   //save move
+    // }else{
+    //   // dont do anything
+    // }
+  }
+
+  saveMove = (row,cell) => {
+    let { board, current_letter } = this.state;
+    board[row][cell][2]=current_letter;
+    let new_board = board;
+    this.setState({board: new_board}, function(){
+      let new_letter = current_letter == 'X' ? 'O' : 'X';
+      this.setState({current_letter: new_letter}, function(){
+        console.log(current_letter);
+      });
+      console.log(new_board);
     });
+  }
+
+  isSquareEmpty = (row,cell) => {
+    let { board } = this.state;
+    console.log(board);
+    console.log(board[row,cell][2]);
+    if (board[row,cell][2] === ''){
+      console.log("The square: "+row+","+cell+" is empty");
+      return true;
+    }else{
+      console.log("The square: "+row+","+cell+" is occupied");
+      return false;
+    }
   }
 
   
