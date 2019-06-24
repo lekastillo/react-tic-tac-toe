@@ -67,13 +67,22 @@ class Game extends Component {
   }
   
   restartGame = () => {
-    this.setState({ status: 0, board: [], board_size: 3},function () {
+    this.setState({ status: 0, board: [], board_size: 3, current_letter: 'X'},function () {
       console.log(this.state.board);
     });
   }
 
   handleChangeBoardSize = (event) => {
     this.setState({board_size: event.target.value});
+  }
+
+  setMoveOption = (row,cell) => {
+    let { board, current_letter } = this.state;
+    console.log("Moved: "+row+","+cell+","+current_letter);
+    let new_letter = current_letter == 'X' ? 'O' : 'X';
+    this.setState({current_letter: new_letter}, function(){
+      console.log(current_letter);
+    });
   }
 
   
@@ -97,7 +106,7 @@ class Game extends Component {
             New Game { board_size }x{board_size }
           </Typography>
           
-          { status==0 && <Typography component="p" variant="p" align="center" color="textPrimary" gutterBottom>
+          { status==0 && <div>
             <TextField
               id="board-size-number"
               label="Board Size "
@@ -110,6 +119,10 @@ class Game extends Component {
               margin="normal"
               variant="filled"
             />
+          </div> }
+          
+          { status==1 && <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
+            Turn of { current_letter }
           </Typography> }
 
           <div className={classes.heroButtons}>
@@ -119,7 +132,7 @@ class Game extends Component {
               </Grid>
             </Grid>
             <Grid item>
-              { status==1 && <Board board={board} current_letter={current_letter} board_size={board_size} /> }
+              { status==1 && <Board board={board} current_letter={current_letter} board_size={board_size} setMoveOption={this.setMoveOption} /> }
             </Grid>
           </div>
         </Layout>  

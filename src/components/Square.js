@@ -32,11 +32,11 @@ const StyledButtom = styled.button`
 
 const Square = (props) => {
 
-  const { cell, setMove,current_letter} = props;
+  const { cell, setMoveOption} = props;
   let squareClass= cell[2]=='X' ? 'x' : cell[2]=='O' ? 'o' : 'e';
   return (
 		// <StyledButtom className={'square'} onClick={()=>setMove(cell[0],cell[1],current_letter)}>{cell[2]}</StyledButtom>
-		<StyledButtom className={'square-'+squareClass} > {cell[2]} </StyledButtom>
+		<StyledButtom className={'square-'+squareClass} onClick={ ()=> setMoveOption(cell[0],cell[1]) } > {cell[2]} </StyledButtom>
   );
 } 
 

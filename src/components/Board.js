@@ -22,30 +22,21 @@ const BoardRowStyled = styled.div`
 
 const Board = (props) => {
 
-  const { board, current_letter, board_size} = props;
+  const { board, current_letter, board_size, setMoveOption} = props;
+
   return (
 		<BoardStyled>
-      {/* {
-        board_size.map((board_index) =>
+      {
+        board.map((board_row) =>
           <BoardRowStyled>
             {
-              board_size.map((cell_index) =>
-                <Square cell={board[]}/>
+              board_row.map((board_cell) =>
+                <Square cell={board_cell} setMoveOption={setMoveOption}/>
               )
             }
           </BoardRowStyled>
         )
       }
-      <BoardRowStyled>
-        
-        <Square cell={[1,2,'O']}/>
-        <Square cell={[1,3,'']}/>
-      </BoardRowStyled> */}
-      <BoardRowStyled>
-        <Square cell={[2,1,'']}/>
-        <Square cell={[2,2,'X']}/>
-        <Square cell={[2,3,'O']}/>
-      </BoardRowStyled>
     </BoardStyled>
   );
 } 
