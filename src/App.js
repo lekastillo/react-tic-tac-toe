@@ -77,21 +77,20 @@ class Game extends Component {
   }
 
   setMoveOption = (row,cell) => {
-    let { board, current_letter } = this.state;
+    let { current_letter } = this.state;
     console.log("Moved: "+row+","+cell+","+current_letter);
     this.saveMove(row,cell);
   }
 
   saveMove = (row,cell) => {
-    let { board, current_letter } = this.state;
+    let { board, current_letter, status } = this.state;
     
-    if (this.isSquareEmpty(row,cell)){
+    if (this.isSquareEmpty(row,cell) && status==1){
 
       board[row][cell][2]=current_letter;
       let new_board = board;
       this.setState({board: new_board}, function(){
-        let new_letter = current_letter == 'X' ? 'O' : 'X';
-        this.setState({current_letter: new_letter});
+        this.checkWinner();
       });
     }
   }
@@ -107,6 +106,82 @@ class Game extends Component {
     }
   }
 
+  checkWinner = () => {
+    let { current_letter } = this.state;
+
+    Promise.all([
+      this.checkRowsForWinner(),
+      this.checkColsForWinner(),
+      this.checkDiaForWinner()
+    ]).then(r=>{
+      let { status } = this.state;
+      if (status==1){
+        let new_letter = current_letter == 'X' ? 'O' : 'X';
+        this.setState({current_letter: new_letter});
+      }
+    }); 
+  }
+
+  checkRowsForWinner = () => {
+    let { board, board_size, current_letter } = this.state;
+
+    for (let row = 0; row <board_size; row++){
+      let cur_row = [];
+      for (let cell = 0; cell <board_size; cell++){
+        cur_row.push( board[row][cell][2]==current_letter ? true : false)
+      }
+      
+      if (cur_row.indexOf(false) == -1){
+        this.setState({status: 2})
+        break;
+      }
+    }
+
+  }
+
+  checkColsForWinner = () => {
+    let { board, board_size, current_letter } = this.state;
+
+    for (let cell = 0; cell <board_size; cell++){
+      let cur_cell = [];
+      for (let row = 0; row <board_size; row++){
+        cur_cell.push( board[row][cell][2]==current_letter ? true : false)
+      }
+      
+      if (cur_cell.indexOf(false) == -1){
+        this.setState({status: 2})
+        break;
+      }
+    }
+
+  }
+
+  checkDiaForWinner = () => {
+    let { board, board_size, current_letter } = this.state;
+    
+    // check left to right dia
+    let lr_dia_line = [];
+    for(let lrdia=0; lrdia<board_size; lrdia++){
+      lr_dia_line.push(board[lrdia][lrdia][2]==current_letter ? true : false);
+    }
+
+    if (lr_dia_line.indexOf(false) == -1){
+      this.setState({status: 2});
+    }
+
+    // check right to left dia
+    let rl_dia_line = [];
+    let z = board_size -1;
+    for(let rldia=z; rldia>-1; rldia--){
+      rl_dia_line.push(board[(z-rldia)][rldia][2]==current_letter ? true : false);
+    }
+
+    if (rl_dia_line.indexOf(false) == -1){
+      this.setState({status: 2})
+    }
+
+  }
+
   
   render(){ 
 
@@ -116,7 +191,7 @@ class Game extends Component {
 
     if (status==0){
       ButtomAction = <Button variant="contained" color="primary" onClick={ ()=> this.handleStatusBtn('start')} > Start! </Button>
-    }else if (status==1){
+    }else if (status==1 || status==2){
       ButtomAction = <Button variant="contained" color="primary" onClick={ ()=> this.handleStatusBtn('restart')} >> Restart! </Button>
     }
 
@@ -147,6 +222,10 @@ class Game extends Component {
             Turn of { current_letter }
           </Typography> }
 
+          { status==2 && <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
+            { current_letter } Wins!
+          </Typography> }
+
           <div className={classes.heroButtons}>
             <Grid container spacing={2} justify="center">
               <Grid item>
@@ -154,7 +233,7 @@ class Game extends Component {
               </Grid>
             </Grid>
             <Grid item>
-              { status==1 && <Board board={board} current_letter={current_letter} board_size={board_size} setMoveOption={this.setMoveOption} /> }
+              { status!=0 && <Board board={board} current_letter={current_letter} board_size={board_size} setMoveOption={this.setMoveOption} /> }
             </Grid>
           </div>
         </Layout>  
