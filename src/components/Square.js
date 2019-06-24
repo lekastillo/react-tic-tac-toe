@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const StyledButtom = styled.button`
@@ -33,9 +33,8 @@ const StyledButtom = styled.button`
 const Square = (props) => {
 
   const { cell, setMoveOption} = props;
-  let squareClass= cell[2]=='X' ? 'x' : cell[2]=='O' ? 'o' : 'e';
+  let squareClass= cell[2]==='X' ? 'x' : cell[2]==='O' ? 'o' : 'e';
   return (
-		// <StyledButtom className={'square'} onClick={()=>setMove(cell[0],cell[1],current_letter)}>{cell[2]}</StyledButtom>
 		<StyledButtom className={'square-'+squareClass} onClick={ ()=> setMoveOption(cell[0],cell[1]) } > {cell[2]} </StyledButtom>
   );
 } 

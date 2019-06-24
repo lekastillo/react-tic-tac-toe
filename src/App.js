@@ -42,9 +42,9 @@ class Game extends Component {
   }
 
   handleStatusBtn = (status) => {
-    if (status=='start') {
+    if (status==='start') {
       this.startGame();
-    } else if (status=='restart'){
+    } else if (status==='restart'){
       this.restartGame();
     }
   }
@@ -86,7 +86,7 @@ class Game extends Component {
   saveMove = (row,cell) => {
     let { board, current_letter, status, moves } = this.state;
     
-    if (this.isSquareEmpty(row,cell) && status==1){
+    if (this.isSquareEmpty(row,cell) && status===1){
 
       board[row][cell][2]=current_letter;
       let new_board = board;
@@ -99,7 +99,7 @@ class Game extends Component {
 
   isSquareEmpty = (row,cell) => {
     let { board } = this.state;
-    if (board[row][cell][2] == ""){
+    if (board[row][cell][2] === ""){
       console.log("The square: "+row+","+cell+" is empty");
       return true;
     }else{
@@ -112,14 +112,17 @@ class Game extends Component {
     let { current_letter } = this.state;
 
     Promise.all([
-      this.checkRowsForWinner(),
-      this.checkColsForWinner(),
-      this.checkDiaForWinner(),
-      this.checkDrawGame()
+      Promise.all([
+        this.checkRowsForWinner(),
+        this.checkColsForWinner(),
+        this.checkDiaForWinner(),
+      ]).then(r=>{
+        this.checkDrawGame()
+      }) 
     ]).then(r=>{
       let { status } = this.state;
-      if (status==1){
-        let new_letter = current_letter == 'X' ? 'O' : 'X';
+      if (status===1){
+        let new_letter = current_letter === 'X' ? 'O' : 'X';
         this.setState({current_letter: new_letter});
       }
     }); 
@@ -131,10 +134,10 @@ class Game extends Component {
     for (let row = 0; row <board_size; row++){
       let cur_row = [];
       for (let cell = 0; cell <board_size; cell++){
-        cur_row.push( board[row][cell][2]==current_letter ? true : false)
+        cur_row.push( board[row][cell][2]===current_letter ? true : false)
       }
       
-      if (cur_row.indexOf(false) == -1){
+      if (cur_row.indexOf(false) === -1){
         this.setState({status: 2})
         break;
       }
@@ -148,10 +151,10 @@ class Game extends Component {
     for (let cell = 0; cell <board_size; cell++){
       let cur_cell = [];
       for (let row = 0; row <board_size; row++){
-        cur_cell.push( board[row][cell][2]==current_letter ? true : false)
+        cur_cell.push( board[row][cell][2]===current_letter ? true : false)
       }
       
-      if (cur_cell.indexOf(false) == -1){
+      if (cur_cell.indexOf(false) === -1){
         this.setState({status: 2})
         break;
       }
@@ -165,10 +168,10 @@ class Game extends Component {
     // check left to right dia
     let lr_dia_line = [];
     for(let lrdia=0; lrdia<board_size; lrdia++){
-      lr_dia_line.push(board[lrdia][lrdia][2]==current_letter ? true : false);
+      lr_dia_line.push(board[lrdia][lrdia][2]===current_letter ? true : false);
     }
 
-    if (lr_dia_line.indexOf(false) == -1){
+    if (lr_dia_line.indexOf(false) === -1){
       this.setState({status: 2});
     }
 
@@ -176,20 +179,22 @@ class Game extends Component {
     let rl_dia_line = [];
     let z = board_size -1;
     for(let rldia=z; rldia>-1; rldia--){
-      rl_dia_line.push(board[(z-rldia)][rldia][2]==current_letter ? true : false);
+      rl_dia_line.push(board[(z-rldia)][rldia][2]===current_letter ? true : false);
     }
 
-    if (rl_dia_line.indexOf(false) == -1){
+    if (rl_dia_line.indexOf(false) === -1){
       this.setState({status: 2})
     }
 
   }
 
   checkDrawGame = () => {
-    let { board_size, moves } = this.state;
+    let { board_size, moves} = this.state;
 
-    if( moves == board_size*board_size ){
-      this.setState({status: 3});
+    if(  moves === board_size*board_size ){
+      let { status } = this.state;
+      
+      status ===1 && this.setState({status: 3});
     }
 
   }
@@ -197,12 +202,12 @@ class Game extends Component {
   render(){ 
 
     const {classes} = this.props;
-    let { status, board, current_letter, board_size, moves } = this.state;
+    let { status, board, current_letter, board_size } = this.state;
     let ButtomAction;
 
-    if (status==0){
+    if (status===0){
       ButtomAction = <Button variant="contained" color="primary" onClick={ ()=> this.handleStatusBtn('start')} > Start! </Button>
-    }else if (status==1 || status==2 || status==3){
+    }else if (status===1 || status===2 || status===3){
       ButtomAction = <Button variant="contained" color="primary" onClick={ ()=> this.handleStatusBtn('restart')} >> Restart! </Button>
     }
 
@@ -211,10 +216,10 @@ class Game extends Component {
       <div className="App">
         <Layout>
           <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-            New Game { board_size }x{board_size }, moves : { moves }
+            New Game { board_size }x{board_size }
           </Typography>
           
-          { status==0 && <div>
+          { status===0 && <div>
             <TextField
               id="board-size-number"
               label="Board Size "
@@ -229,15 +234,15 @@ class Game extends Component {
             />
           </div> }
           
-          { status==1 && <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
+          { status===1 && <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
             Turn of { current_letter }
           </Typography> }
 
-          { status==2 && <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
+          { status===2 && <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
             { current_letter } Wins!
           </Typography> }
           
-          { status==3 && <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
+          { status===3 && <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
             Draw Game!
           </Typography> }
 
@@ -248,7 +253,7 @@ class Game extends Component {
               </Grid>
             </Grid>
             <Grid item>
-              { status!=0 && <Board board={board} current_letter={current_letter} board_size={board_size} setMoveOption={this.setMoveOption} /> }
+              { status!==0 && <Board board={board} current_letter={current_letter} board_size={board_size} setMoveOption={this.setMoveOption} /> }
             </Grid>
           </div>
         </Layout>  

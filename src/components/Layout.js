@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar'
 import TypoGraphy from '@material-ui/core/Typography'
@@ -15,7 +15,7 @@ export default function Layout(props) {
       <div>
         <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
           <Toolbar className={classes.toolbar}>
-            <TypoGraphy variant="title" color="inherit">
+            <TypoGraphy color="inherit">
               Tic Tac Toe
             </TypoGraphy>
             <NavBar />

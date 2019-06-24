@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Square from './Square'
 
@@ -22,16 +22,16 @@ const BoardRowStyled = styled.div`
 
 const Board = (props) => {
 
-  const { board, current_letter, board_size, setMoveOption} = props;
+  const { board, setMoveOption} = props;
 
   return (
 		<BoardStyled>
       {
         board.map((board_row) =>
-          <BoardRowStyled>
+          <BoardRowStyled key={board_row.toString()}>
             {
               board_row.map((board_cell) =>
-                <Square cell={board_cell} setMoveOption={setMoveOption}/>
+                <Square key={board_cell.toString() } cell={board_cell} setMoveOption={setMoveOption}/>
               )
             }
           </BoardRowStyled>
