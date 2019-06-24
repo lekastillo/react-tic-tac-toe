@@ -32,7 +32,8 @@ class Game extends Component {
       board_size: 3,
       board: [],
       status: 0,
-      current_letter: 'X'
+      current_letter: 'X',
+      moves: 0
     }
 
 
@@ -67,7 +68,7 @@ class Game extends Component {
   }
   
   restartGame = () => {
-    this.setState({ status: 0, board: [], board_size: 3, current_letter: 'X'},function () {
+    this.setState({ status: 0, board: [], board_size: 3, current_letter: 'X', moves: 0},function () {
       console.log(this.state.board);
     });
   }
@@ -83,13 +84,14 @@ class Game extends Component {
   }
 
   saveMove = (row,cell) => {
-    let { board, current_letter, status } = this.state;
+    let { board, current_letter, status, moves } = this.state;
     
     if (this.isSquareEmpty(row,cell) && status==1){
 
       board[row][cell][2]=current_letter;
       let new_board = board;
-      this.setState({board: new_board}, function(){
+      let new_moves= moves+1;
+      this.setState({board: new_board, moves: new_moves }, function(){
         this.checkWinner();
       });
     }
@@ -112,7 +114,8 @@ class Game extends Component {
     Promise.all([
       this.checkRowsForWinner(),
       this.checkColsForWinner(),
-      this.checkDiaForWinner()
+      this.checkDiaForWinner(),
+      this.checkDrawGame()
     ]).then(r=>{
       let { status } = this.state;
       if (status==1){
@@ -182,16 +185,24 @@ class Game extends Component {
 
   }
 
+  checkDrawGame = () => {
+    let { board_size, moves } = this.state;
+
+    if( moves == board_size*board_size ){
+      this.setState({status: 3});
+    }
+
+  }
   
   render(){ 
 
     const {classes} = this.props;
-    let { status, board, current_letter, board_size } = this.state;
+    let { status, board, current_letter, board_size, moves } = this.state;
     let ButtomAction;
 
     if (status==0){
       ButtomAction = <Button variant="contained" color="primary" onClick={ ()=> this.handleStatusBtn('start')} > Start! </Button>
-    }else if (status==1 || status==2){
+    }else if (status==1 || status==2 || status==3){
       ButtomAction = <Button variant="contained" color="primary" onClick={ ()=> this.handleStatusBtn('restart')} >> Restart! </Button>
     }
 
@@ -200,7 +211,7 @@ class Game extends Component {
       <div className="App">
         <Layout>
           <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-            New Game { board_size }x{board_size }
+            New Game { board_size }x{board_size }, moves : { moves }
           </Typography>
           
           { status==0 && <div>
@@ -224,6 +235,10 @@ class Game extends Component {
 
           { status==2 && <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
             { current_letter } Wins!
+          </Typography> }
+          
+          { status==3 && <Typography component="h4" variant="h4" align="center" color="textPrimary" gutterBottom>
+            Draw Game!
           </Typography> }
 
           <div className={classes.heroButtons}>
